@@ -1,0 +1,12 @@
+- hosts: all
+  become: true # Hace sudo en la maquina
+
+  tasks:
+    - name: Instalar paquetes básicos
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      with_items:
+        - curl
+        - wget

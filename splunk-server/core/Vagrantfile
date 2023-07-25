@@ -1,0 +1,57 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |cfg|
+  cfg.vm.box = "ubuntu/focal64"
+
+  cfg.vm.provision  "file", source: "../config-files/local/user-seed.conf",
+                    destination: "splunk-files/user-seed.conf"
+  cfg.vm.provision  "file", source: "../software/splunk-7.2.3.deb", 
+                    destination: "splunk-7.2.3.deb"
+  
+  cfg.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+    v.cpus = 1
+    v.customize ["modifyvm", :id, "--vrde", "off"]
+  end
+
+  cfg.vm.define "license-server" do |ls|
+    ls.vm.network :private_network, ip: "192.168.33.10"
+    ls.vm.hostname = "splunk-license-server"
+    ls.vm.provision "file", source: "../licenses/Splunk.License",
+                    destination: "splunk-files/Splunk.License.lic"
+    ls.vm.provision :shell, inline: <<-SHELL
+      rm -vr /opt/splunk/etc/licenses/enterprise
+      mkdir -p /opt/splunk/etc/licenses/enterprise
+      cp  /home/vagrant/splunk-files/Splunk.License.lic \
+          /opt/splunk/etc/licenses/enterprise/Splunk.License.lic
+      /opt/splunk/bin/splunk restart
+    SHELL
+  end
+
+  cfg.vm.define "indexer" do |idx|
+    idx.vm.network :private_network, ip: "192.168.33.11"
+    idx.vm.hostname = "splunk-indexer"
+    idx.vm.provision  "file", source: "../config-files/local/inputs.conf",
+                      destination: "splunk-files/inputs.conf"
+    idx.vm.provision :shell, inline: <<-SHELL
+      cp /home/vagrant/splunk-files/* /opt/splunk/etc/system/local
+      /opt/splunk/bin/splunk restart
+    SHELL
+  end
+
+  cfg.vm.define "sh" do |sh|
+    sh.vm.network :private_network, ip: "192.168.33.12"
+    sh.vm.hostname = "splunk-sh"
+  end
+
+  cfg.vm.provision :ansible do |ansible|
+    ansible.playbook = "/Users/carlos/Vagrant/splunk/provision-files/basic-installs.yml"
+  end
+
+  cfg.vm.provision :shell, inline: <<-SHELL
+    dpkg -i /home/vagrant/splunk-7.2.3.deb
+    cp /home/vagrant/splunk-files/* /opt/splunk/etc/system/local
+    /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt
+  SHELL
+end

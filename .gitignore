@@ -1,0 +1,4 @@
+*.License
+.DS_Store
+.vagrant/
+*.deb
