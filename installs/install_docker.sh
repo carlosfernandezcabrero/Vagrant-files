@@ -738,6 +738,8 @@ do_install() {
 	exit 1
 }
 
+echo "alias docker=\"sudo docker\"" >> /home/vagrant/.bashrc
+
 # wrapped up in a function so that we have some protection against only getting
 # half the file during "curl | sh"
 do_install
