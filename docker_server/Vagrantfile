@@ -4,11 +4,12 @@
 $script = <<-'SCRIPT'
   echo "" >> /home/vagrant/.bashrc
   echo "alias docker=\"sudo docker\"" >> /home/vagrant/.bashrc
+  echo "export TERM=xterm-256color" >> /home/vagrant/.bashrc
 SCRIPT
 
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/jammy64"
+  config.vm.box = "geerlingguy/ubuntu2004"
   config.vm.network "private_network", ip: "192.168.33.11"
   config.vm.synced_folder "~/dev", "/home/vagrant/dev"
 
