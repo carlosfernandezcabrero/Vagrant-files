@@ -2,9 +2,8 @@
 # vi: set ft=ruby :
 
 $script = <<-'SCRIPT'
-  echo "" >> /home/vagrant/.bashrc
   echo "alias docker=\"sudo docker\"" >> /home/vagrant/.bashrc
-  echo "export TERM=xterm-256color" >> /home/vagrant/.bashrc
+  echo "export TERM=xterm" >> /home/vagrant/.bashrc
 SCRIPT
 
 
@@ -15,7 +14,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |v|
     v.name = "docker-server"
-    v.memory = 1536
+    v.memory = 2048
     v.cpus = 2
   end
 
