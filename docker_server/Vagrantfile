@@ -2,14 +2,15 @@
 # vi: set ft=ruby :
 
 $script = <<-'SCRIPT'
-echo "" >> /home/vagrant/.bashrc
-echo "alias docker=\"sudo docker\"" >> /home/vagrant/.bashrc
+  echo "" >> /home/vagrant/.bashrc
+  echo "alias docker=\"sudo docker\"" >> /home/vagrant/.bashrc
 SCRIPT
 
 
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/jammy64"
   config.vm.network "private_network", ip: "192.168.33.11"
+  config.vm.synced_folder "~/dev", "/home/vagrant/dev"
 
   config.vm.provider "virtualbox" do |v|
     v.name = "docker-server"
