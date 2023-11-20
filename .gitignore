@@ -6,3 +6,4 @@
 migrate-splunk/
 migrate-python/
 .gitconfig
+*.log
